@@ -34,3 +34,9 @@ FROM employees E,
 WHERE e.job_id = j.job_id
 AND   e.salary >= j.max_salary;
 
+--outer join : 정상적으로 조인 조건을 만족하지 못하는 행들을 보기위해서 쓴다. (+)을 쓴다. 조인시킬 값이 없는 조인측에 위치
+
+
+
+
+
