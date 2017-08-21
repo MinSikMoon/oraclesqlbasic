@@ -46,6 +46,9 @@ SELECT FIRST_NAME || ''||
       '('||JOB_ID||')'
 FROM EMPLOYEES;
 
+SELECT FIRST_NAME||LAST_NAME || '의 연봉은 ' || SALARY*12 || '입니다' AS TEXT
+FROM EMPLOYEES;
+
 
 
 
