@@ -4,9 +4,10 @@ WHERE FIRST_NAME = 'alexis'; --no results
 
 SELECT FIRST_NAME, LOWER(FIRST_NAME), UPPER(FIRST_NAME)
 FROM EMPLOYEES
-WHERE FIRST_NAME = INITCAP('alexis'); --Ä®·³À» °¡°øÇÏÁö ¾Ê°í °ªÀÚÃ¼¸¦ ¹Ù²Ù´Â °ÍÀÌ ±ÇÀåµÈ´Ù. 
+WHERE FIRST_NAME = INITCAP('alexis'); --ì¹¼ëŸ¼ì„ ê°€ê³µí•˜ì§€ ì•Šê³  ê°’ìžì²´ë¥¼ ë°”ê¾¸ëŠ” ê²ƒì´ ê¶Œìž¥ëœë‹¤. 
 
 SELECT * 
 FROM EMPLOYEES
-WHERE LOWER(FIRST_NAME) = 'alexis'; --Ä®·³ÀÚÃ¼¸¦ Á¶ÀÛÇÔ. ¼º´É°üÁ¡¿¡¼­´Â ÀÌ·¸°Ô ÇÏ¸é ÁÁÁö ¾Ê´Ù. ÀÎµ¦½º¸¦ È°¿ëÇÏÁö ¸øÇÏ°Ô µÈ´Ù. full scanÀÌ ÀÏ¾î³ª°Ô µÈ´Ù.
+WHERE LOWER(FIRST_NAME) = 'alexis'; --ì¹¼ëŸ¼ìžì²´ë¥¼ ì¡°ìž‘í•¨. ì„±ëŠ¥ê´€ì ì—ì„œëŠ” ì´ë ‡ê²Œ í•˜ë©´ ì¢‹ì§€ ì•Šë‹¤. ì¸ë±ìŠ¤ë¥¼ í™œìš©í•˜ì§€ ëª»í•˜ê²Œ ëœë‹¤. full scanì´ ì¼ì–´ë‚˜ê²Œ ëœë‹¤.
 
+select CONCAT('Good', 'String') FROM dual;
