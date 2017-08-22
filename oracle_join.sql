@@ -61,6 +61,12 @@ FROM TEST_EMP E,
 WHERE e.department_id = d.department_id(+)
 AND e.department_id = 10;
 
+--SELF JOIN --EMPLOYEES 테이블에는 모든 사원 즉, 매니저와 사원들 모두 들어있기 때문에.
+SELECT WORKER.LAST_NAME || ' works for ' || MANAGER.LAST_NAME
+FROM employees worker, 
+     employees manager
+WHERE worker.manager_id = manager.employee_id;
 
+DESC EMPLOYEES;
 
 
