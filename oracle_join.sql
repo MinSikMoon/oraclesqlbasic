@@ -79,7 +79,7 @@ FROM EMPLOYEES E,
      JOBS J
 WHERE e.department_id = d.department_id
 AND E.job_id = j.job_id
-AND e.manager_id = m.employee_id(+)
+AND e.manager_id = m.employee_id(+) --보여져야할 기준 테이블의 반대편에 붙인다.
 ORDER BY e.first_name;
 
 --버젼1 -- 내 버젼
@@ -97,7 +97,7 @@ FROM (SELECT AVG(SALARY) AS avg_salary FROM employees) TARGET,
      EMPLOYEES E
 WHERE TARGET.avg_salary < E.salary;
 
-SELECT E.first_name, E.SALARY
+SELECT E.first_name, E.SALARY, (SELECT AVG(SALARY) FROM EMPLOYEES)
 FROM EMPLOYEES E
 WHERE E.SALARY > (SELECT AVG(SALARY) FROM EMPLOYEES);
 
@@ -108,3 +108,49 @@ SELECT E.FIRST_NAME, E.HIRE_DATE, I.HIRE_DATE FROM EMPLOYEES I, EMPLOYEES E WHER
 --정답2
 SELECT * FROM EMPLOYEES I, EMPLOYEES E WHERE I.FIRST_NAME = 'Ismael'
 AND I.hire_date < E.hire_date;
+
+
+
+
+--실습 정답
+--축이 되는 테이블을 만들고, 나머지 덧붙이는 얘들을 조인시킨다.
+SELECT e.first_name, e.last_name, d.department_name, DECODE(m.first_name, NULL, '사장', m.first_name) as manager_name, j.job_title
+FROM employees e,
+     departments d,
+     employees m,
+     jobs j
+Where e.department_id = d.department_id
+AND e.manager_id = m.employee_id(+)
+AND e.job_id = j.job_id
+ORDER BY d.department_name;
+
+--2
+SELECT * 
+FROM EMPLOYEES I, EMPLOYEES E 
+WHERE I.FIRST_NAME = 'Ismael'
+AND I.hire_date < E.hire_date;
+
+--서브쿼리 버젼 : 이렇게 짜면 옵티마이저가 고려하는 동작방식 후보가 하나로 고정되어 버린다. 위의 경우는 옵티마이저의 실행계획 후보를 여러개 만들 수 있다. 
+SELECT samples.first_name, samples.hire_date
+FROM (SELECT hire_date from employees where first_name = 'Ismael') TARGET,
+     EMPLOYEES SAMPLES
+WHERE TARGET.hire_date <= SAMPLES.hire_date;
+
+--3
+SELECT AVG(SALARY) FROM EMPLOYEES;
+
+SELECT FIRST_NAME, SALARY FROM employees WHERE SALARY > 10000;
+
+SELECT FIRST_NAME, SALARY, (SELECT AVG(SALARY) FROM EMPLOYEES) AS AVG_SALARY FROM employees WHERE SALARY > (SELECT AVG(SALARY) FROM EMPLOYEES);
+
+--쿼리가 반복된다. 줄여주자.
+SELECT E.first_name, E.SALARY, (SELECT AVG(SALARY) FROM EMPLOYEES)
+FROM EMPLOYEES E
+WHERE E.SALARY > (SELECT AVG(SALARY) FROM EMPLOYEES);
+
+--스칼라 서브쿼리는 가급적 적게 써야한다. 
+--서브쿼리는 3개가 있다. 그냥, 스칼라, 인라인뷰
+SELECT E.first_name, E.salary, round(TARGET.AVG_SALARY)
+FROM (SELECT AVG(SALARY) AS avg_salary FROM employees) TARGET, 
+     EMPLOYEES E
+WHERE TARGET.avg_salary < E.salary;
