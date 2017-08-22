@@ -61,12 +61,54 @@ GROUP BY location_id;
 --그룹을 제한하기 위해 WHERE절을 쓸 수 없다. HAVING 절을 써야한다. 
 SELECT DEPARTMENT_ID, AVG(SALARY)
 FROM EMPLOYEES
-WHERE AVG(salary) > 2000
 GROUP BY department_id; --에러
+WHERE AVG(salary) > 2000--where 절이 제한하는 것은 from절에서 가져오는것, where이 그룹 전에 실행되었으므로 
 
 SELECT DEPARTMENT_ID, AVG(SALARY)
 FROM EMPLOYEES
 GROUP BY department_id
 HAVING AVG(SALARY) > 2000;
+
+-실습
+SELECT COUNT(*)
+FROM employees 
+GROUP BY department_id;
+
+
+
+SELECT DEPARTMENT_ID, AVG(SALARY), COUNT(*) 
+FROM EMPLOYEES
+GROUP BY department_id
+HAVING AVG(SALARY) >= 10000 AND COUNT(*) >= 2;
+
+--1. 전체 평균
+SELECT AVG(SALARY) 
+FROM employees;
+
+--부서별 평균 급여
+SELECT AVG(SALARY) 
+FROM EMPLOYEES
+GROUP BY department_id;
+
+
+
+
+--2. 평균 급여보다 많이 받는 부서별
+SELECT DEPARTMENT_ID
+FROM EMPLOYEES
+GROUP BY DEPARTMENT_ID
+HAVING AVG(SALARY) > (SELECT AVG(SALARY) FROM employees);
+
+--3. 완성
+SELECT E.DEPARTMENT_ID, E.FIRST_NAME
+FROM EMPLOYEES E,
+     (SELECT DEPARTMENT_ID
+      FROM EMPLOYEES
+      GROUP BY DEPARTMENT_ID
+        HAVING AVG(SALARY) > (SELECT AVG(SALARY) FROM employees)) SUB
+WHERE E.department_id = SUB.DEPARTMENT_ID
+ORDER BY DEPARTMENT_ID;
+
+
 
 
