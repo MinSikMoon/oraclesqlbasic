@@ -156,10 +156,118 @@ HAVING AVG(salary) > (SELECT AVG(SALARY) FROM EMPLOYEES);
 SELECT * FROM EMPLOYEES WHERE department_id IN (100, 20, 70 ...);
 
 --3이랑 2랑 결합
-SELECT FIRST_NAME
+SELECT *
 FROM employees
 WHERE department_id IN
-(SELECT DEPARTMENT_ID, AVG(SALARY)
+(SELECT DEPARTMENT_ID
 FROM employees
 GROUP BY DEPARTMENT_ID
 HAVING AVG(salary) > (SELECT AVG(SALARY) FROM EMPLOYEES));
+
+
+
+--실습
+desc departments;
+desc employees;
+desc jobs;
+
+--1.
+SELECT e.job_id
+FROM EMPLOYEES E
+GROUP BY E.department_id, E.JOB_ID
+HAVING E.DEPARTMENT_ID = 30;
+
+SELECT s.JOB_TITLE
+FROM JOBS S, (SELECT e.job_id
+FROM EMPLOYEES E
+GROUP BY E.department_id, E.JOB_ID
+HAVING E.DEPARTMENT_ID = 30) G
+WHERE S.job_id = G.job_id;
+
+--2. 수수료를 받는 모든 직원의 이름, 부서, 도시명 출력하기
+--1. 수수료 받는 직원
+SELECT * FROM EMPLOYEES;
+SELECT employee_id FROM EMPLOYEES
+WHERE COMMISSION_PCT != 0;
+DESC DEPARTMENTS
+DESC LOCATIONS
+--2. JOIN 하기
+SELECT E.FIRST_NAME, D.department_name, l.city, C.COMMISSION_PCT
+FROM EMPLOYEES E,
+     (SELECT employee_id, COMMISSION_PCT FROM EMPLOYEES
+      WHERE COMMISSION_PCT != 0) C,
+      LOCATIONS L,
+      DEPARTMENTS D
+WHERE E.employee_id = C.EMPLOYEE_ID
+AND E.department_id = D.department_id
+AND d.department_id = d.department_id;
+
+--3. SOUTHLAKE에 근무하는 모든 직원 /이름/ 업무/ 부서번호/ 부서명 출력하기
+--1. SOUTHLAKE의 로케이션 ID 구하기
+SELECT * FROM locations WHERE city = 'Southlake';
+--2. location id를 이용하여 south lake에 있는 department id 구하기
+SELECT department_id FROM departments WHERE LOCATION_ID = (SELECT LOCATION_ID FROM locations WHERE city = 'Southlake');
+--3. DEPARTMENT ID를 이용하여 이름, 업무, 부서번호, 부서명 출력하기
+SELECT * 
+FROM EMPLOYEES 
+WHERE department_id = (SELECT department_id FROM departments WHERE LOCATION_ID = (SELECT LOCATION_ID FROM locations WHERE city = 'Southlake'));
+
+--7. 그들 매니저 보다 먼저 입사한 직원에 대해/ 모든 직원 이름/ 입사일/ 매니저 이름/ 매니저 입사일 구하기
+--1. 입사일 구하기
+select * from employees;
+--2. self join 해보기
+select e.employee_id, e.first_name, e.hire_date, e.manager_id, m.hire_date, m.first_name
+from employees e, employees m
+where e.manager_id = m.employee_id 
+and e.hire_date < m.hire_date;
+
+
+--정답
+--4번 : DISTINCT STYLE
+SELECT * FROM EMPLOYEES WHERE department_id = 30;
+--JOB ID를 가져오자.
+SELECT DISTINCT J.job_title FROM EMPLOYEES E, JOBS J WHERE E.department_id = 30 AND J.JOB_ID = e.job_id;
+--인라인 스타일 : 서브쿼리가 FROM에 들어가면 인라인이라고 한다.
+SELECT J.JOB_TITLE FROM (SELECT DISTINCT JOB_ID FROM EMPLOYEES WHERE department_id = 30) E, JOBS J WHERE E.JOB_ID = J.job_id;
+
+--5번
+--1. 수수료를 받는 직원뽑기
+SELECT * FROM employees E WHERE commission_pct IS NOT NULL;
+
+SELECT FIRST_NAME, D.department_name, L.city
+FROM employees E, DEPARTMENTS D, LOCATIONS L
+WHERE E.commission_pct IS NOT NULL
+AND E.DEPARTMENT_ID = D.department_id
+AND L.LOCATION_ID = d.location_id;
+
+
+--6번
+--1. SOUTHLAKE가 어딘지 먼저 찾는다.
+SELECT * FROM LOCATIONS WHERE city = 'Southlake';
+
+SELECT location_id FROM LOCATIONS WHERE city = 'Southlake';
+
+--2. join 하자
+SELECT * FROM LOCATIONS L, DEPARTMENTS D WHERE city = 'Southlake' AND L.location_id = d.location_id;
+
+--3. EMPLOYEE랑 조인
+SELECT * FROM LOCATIONS L, DEPARTMENTS D, EMPLOYEES E WHERE city = 'Southlake' AND L.location_id = d.location_id AND e.department_id = d.department_id;
+
+--4. JOB랑 조인
+SELECT * FROM LOCATIONS L, DEPARTMENTS D, EMPLOYEES E, JOBS J
+WHERE city = 'Southlake' AND L.location_id = d.location_id AND e.department_id = d.department_id AND E.job_id = J.job_id;
+
+SELECT E.first_name, J.job_title FROM LOCATIONS L, DEPARTMENTS D, EMPLOYEES E, JOBS J
+WHERE city = 'Southlake' AND L.location_id = d.location_id AND e.department_id = d.department_id AND E.job_id = J.job_id;
+
+--7번
+--셀프조인
+--1. MANAGER 가져오기
+SELECT * FROM employees W, employees M WHERE w.manager_id = m.employee_id;
+--2. 필터링 조건 걸기
+SELECT * FROM employees W, employees M WHERE w.manager_id = m.employee_id
+AND w.hire_date < m.hire_date;
+
+--3. 표시 적기
+SELECT w.first_name, W.hire_date, w.manager_id, m.first_name, m.hire_date FROM employees W, employees M WHERE w.manager_id = m.employee_id
+AND w.hire_date < m.hire_date;
