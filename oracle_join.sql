@@ -68,5 +68,43 @@ FROM employees worker,
 WHERE worker.manager_id = manager.employee_id;
 
 DESC EMPLOYEES;
+DESC DEPARTMENTS;
+SELECT * FROM USER_TABLES;
+DESC JOBS;
+--실습
+SELECT E.first_name, e.last_name, d.department_name, M.first_name AS MANAGER_NAME, J.JOB_TITLE
+FROM EMPLOYEES E, 
+     EMPLOYEES M,
+     DEPARTMENTS D,
+     JOBS J
+WHERE e.department_id = d.department_id
+AND E.job_id = j.job_id
+AND e.manager_id = m.employee_id(+)
+ORDER BY e.first_name;
 
+--버젼1 -- 내 버젼
+SELECT samples.first_name, samples.hire_date
+FROM (SELECT hire_date from employees where first_name = 'Ismael') TARGET,
+     EMPLOYEES SAMPLES
+WHERE TARGET.hire_date <= SAMPLES.hire_date;
 
+SELECT * 
+FROM EMPLOYEES
+ORDER BY hire_date;
+
+SELECT E.first_name, E.salary, round(TARGET.AVG_SALARY)
+FROM (SELECT AVG(SALARY) AS avg_salary FROM employees) TARGET, 
+     EMPLOYEES E
+WHERE TARGET.avg_salary < E.salary;
+
+SELECT E.first_name, E.SALARY
+FROM EMPLOYEES E
+WHERE E.SALARY > (SELECT AVG(SALARY) FROM EMPLOYEES);
+
+     
+     
+SELECT E.FIRST_NAME, E.HIRE_DATE, I.HIRE_DATE FROM EMPLOYEES I, EMPLOYEES E WHERE I.FIRST_NAME = 'Ismael' AND I.HIRE_DATE < E.HIRE_DATE;
+
+--정답2
+SELECT * FROM EMPLOYEES I, EMPLOYEES E WHERE I.FIRST_NAME = 'Ismael'
+AND I.hire_date < E.hire_date;
