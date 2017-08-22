@@ -30,8 +30,14 @@ and e.first_name != 'Ismael'; --<> 'Ismael' 도 된다. <>
 --평균급여 구하기
 SELECT AVG(SALARY) FROM employees;
 --이름에 t,T 들어가는 사람이고 평균 급여 이상받는 사람
-SELECT employee_id, first_name, salary FROM employees WHERE (first_name LIKE '%T%' OR first_name LIKE '%t%') AND (salary  > (SELECT AVG(SALARY) FROM employees))
-ORDER BY salary;
+SELECT department_id FROM employees WHERE (first_name LIKE '%T%' OR first_name LIKE '%t%') AND (salary  > (SELECT AVG(SALARY) FROM employees));
+
+-- 이제 in 으로 해서 뽑아보자.
+SELECT employee_id, first_name, salary, department_id
+FROM employees
+WHERE department_id IN (SELECT department_id FROM employees WHERE (first_name LIKE '%T%' OR first_name LIKE '%t%') AND (salary  > (SELECT AVG(SALARY) FROM employees)));
+
+
 
 
 
